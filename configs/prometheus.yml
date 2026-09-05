@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'pq-shield-monitor'
+
+scrape_configs:
+  - job_name: 'pq-shield'
+    static_configs:
+      - targets: ['pq-shield:9090']
+        labels:
+          service: 'pq-shield-sidecar'
+          component: 'hybrid-pqc-tls-terminator'
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

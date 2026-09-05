@@ -1,0 +1,12 @@
+bin/
+*.exe
+*.test
+*.out
+certs/
+.pqshield.pid
+*.pprof
+coverage.txt
+coverage.html
+.env
+.vscode/
+.idea/

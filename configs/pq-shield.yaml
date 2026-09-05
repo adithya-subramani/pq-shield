@@ -1,0 +1,15 @@
+listen_addr: ":8443"
+metrics_addr: ":9090"
+upstream_url: "http://127.0.0.1:8080"
+
+cert_file: "./certs/server.crt"
+key_file:  "./certs/server.key"
+
+strict_pqc: false
+drain_timeout_seconds: 15
+log_level: "info"
+
+upstream_mtls: false
+upstream_ca_file: ""
+upstream_cert_file: ""
+upstream_key_file: ""

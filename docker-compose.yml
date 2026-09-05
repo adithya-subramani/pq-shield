@@ -1,0 +1,63 @@
+services:
+  pq-shield:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pq-shield
+    ports:
+      - "8443:8443"
+      - "9090:9090"
+    volumes:
+      - ./certs:/etc/pq-shield/certs:ro
+      - ./configs/pq-shield.yaml:/etc/pq-shield/config.yaml:ro
+    environment:
+      - PQSHIELD_CERT_FILE=/etc/pq-shield/certs/server.crt
+      - PQSHIELD_KEY_FILE=/etc/pq-shield/certs/server.key
+      - PQSHIELD_UPSTREAM_URL=http://legacy-app:8080
+    depends_on:
+      - legacy-app
+    restart: unless-stopped
+    mem_limit: 64m
+    cpus: "1.0"
+
+  legacy-app:
+    image: kennethreitz/httpbin:latest
+    container_name: pqshield-legacy-app
+    expose:
+      - "8080"
+    restart: unless-stopped
+    mem_limit: 128m
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: pqshield-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
+    depends_on:
+      - pq-shield
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: pqshield-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./configs/grafana-datasource.yml:/etc/grafana/provisioning/datasources/prometheus.yml:ro
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=pqshield
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+  grafana_data:
