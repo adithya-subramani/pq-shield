@@ -218,7 +218,7 @@ pq-shield/
 ├── scripts/
 │   ├── test_pqc_client.go      # Integration scenarios (//go:build integration)
 │   ├── generate_certs.go       # Self-signed CA + server cert generator
-│   └── benchmark.k6.js         # k6 load profile (alternative to hey)
+│   └── run_benchmark.go        # Benchmark load test runner
 ├── configs/
 │   ├── pq-shield.yaml          # Example config
 │   ├── prometheus.yml          # Scrape config
